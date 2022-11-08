@@ -1,0 +1,10 @@
+name: ColegSim
+version: '${project.version}'
+main: uk.co.tmdavies.colegsim.ColegSim
+api-version: 1.19
+commands:
+  colegsim:
+    description: Player Info Manipulation and Viewing
+permissions:
+  colegsim.admin:
+    default: op
