@@ -1,15 +1,15 @@
-## ColegSim
+# ColegSim
 
-# Commands
+## Commands
 /colegsim dump <player>
 /colegsim reset <player>
 
-# Permissions
+## Permissions
 colegsim.admin - Enables all commands
 
-# Main Features
+## Main Features
 Bans upon death until the start of the next day.
 
-# Future Features
+## Future Features
 Bounties
 Steal Lives
