@@ -161,6 +161,15 @@ public class ShadowConfig {
         return this.getInt(path);
     }
 
+    public long getLong(String path) {
+        return this.ymlFile.getLong(path);
+    }
+
+    public long getLongByDefault(String path, long value) {
+        this.add(path, value);
+        return this.getLong(path);
+    }
+
     public String getString(String path) {
         return this.ymlFile.getString(path);
     }

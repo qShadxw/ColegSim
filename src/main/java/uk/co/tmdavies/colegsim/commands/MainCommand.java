@@ -61,6 +61,10 @@ public class MainCommand implements CommandExecutor, TabCompleter {
                         sender.sendMessage(ShadowUtils.Chat(" %d| %sKills: %p" + colegPlayer.getPlayerKills()));
                         sender.sendMessage(ShadowUtils.Chat(" %d| %sLives: %p" + colegPlayer.getPlayerLives()));
                         sender.sendMessage(ShadowUtils.Chat(" %d| %sIsDead: %p" + colegPlayer.isDead()));
+                        sender.sendMessage(ShadowUtils.Chat(" %d| %sLastLogin: %p" + colegPlayer.getLoginTime()));
+                        sender.sendMessage(ShadowUtils.Chat(" %d| %sDailyReset: %p" + colegPlayer.getTomorrowTime()));
+                        sender.sendMessage(ShadowUtils.Chat(" %d| %sTarget: %p" + colegPlayer.getTarget()));
+                        sender.sendMessage(ShadowUtils.Chat(" %d| %sTargetKilled: %p" + colegPlayer.getTargetKilled()));
 
                     }
 

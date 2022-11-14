@@ -15,6 +15,8 @@ import uk.co.tmdavies.colegsim.utils.ShadowUtils;
 import java.time.*;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.ArrayList;
 
 public class PlayerListener implements Listener {
 
@@ -26,8 +28,23 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-
         if (event.getPlayer().isBanned()) return;
+
+        List<String> playerNames = new ArrayList<>();
+
+        if (!ColegSim.playerConfig.getStringList("Players").isEmpty())
+        
+            ColegSim.playerConfig.getStringList("Players").forEach(string -> playerNames.add(string));
+
+        if (!playerNames.contains(event.getPlayer().getName())) {
+
+            playerNames.add(event.getPlayer().getName());
+            
+            ColegSim.playerConfig.add("Players", playerNames);
+
+            ColegSim.playerConfig.save();
+
+        }
 
         ColegSim.playerStorage.put(event.getPlayer(), new ColegPlayer(event.getPlayer()));
 
@@ -46,26 +63,32 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
 
-        // if (!(event.getEntity().getKiller() instanceof Player)) return;
+        if (!(event.getEntity().getKiller() instanceof Player)) return;
 
-        Player deadPlayer = event.getEntity();
-        ColegPlayer colegPlayer = ColegSim.playerStorage.get(deadPlayer);
+        ColegPlayer colegPlayer = ColegSim.playerStorage.get(event.getEntity());
+        ColegPlayer colegPlayerKiller = ColegSim.playerStorage.get(event.getEntity().getKiller());
 
-        colegPlayer.removePlayerLives(1);
+        Bukkit.broadcastMessage(ColegSim.mainConfig.getString("Death.Announcement")
+            .replace("%player%", colegPlayer.getPlayer().getName())
+            .replace("%target%", colegPlayerKiller.getPlayer().getName()));
 
-        if (colegPlayer.getPlayerLives() != 0) return;
+        if (event.getEntity().getKiller().getName().equals(event.getEntity().getName())) {
+            // Player killed self
+            // If Target is Self
+            if (colegPlayer.getTarget() == colegPlayerKiller.getPlayer().getName()) {
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH, 1);
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        long howMany = (calendar.getTimeInMillis()-System.currentTimeMillis());
+                if (!colegPlayer.getTargetKilled()) colegPlayer.killedTarget();
+                colegPlayer.playerDeath();
 
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tempban " + deadPlayer.getName() + " " + (howMany/60000) + "m DeathBan");
+                return;
 
-        deadPlayer.kickPlayer("Lmao Nerd.");
+            }
+
+        }
+
+        colegPlayer.playerDeath();
+        
+        if (colegPlayerKiller.getTarget().equals(colegPlayer.getPlayer().getName())) colegPlayerKiller.killedTarget();
 
     }
 

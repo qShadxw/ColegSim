@@ -4,6 +4,7 @@ import org.bukkit.ChatColor;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Calendar;
 
 public class ShadowUtils {
 
@@ -145,5 +146,35 @@ public class ShadowUtils {
         }
 
         return Math.max(time, 1);
+    }
+
+    public static long getTimeTillTomorrow() {
+
+        Calendar calendar = Calendar.getInstance();
+        
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        
+        long howMany = (calendar.getTimeInMillis()-System.currentTimeMillis());
+        
+        return howMany;
+
+    }
+
+    public static long getTimeTomorrow() {
+
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        return calendar.getTimeInMillis();
+
     }
 }
