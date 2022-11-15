@@ -41,7 +41,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
                 Player targetPlayer;
                 ColegPlayer colegPlayer;
 
-                switch (args[0]) {
+                switch (args[0].toLowerCase()) {
 
                     case "dump" -> {
 
@@ -92,6 +92,93 @@ public class MainCommand implements CommandExecutor, TabCompleter {
 
                 }
 
+                case 4:
+
+                    if (args[0].equalsIgnoreCase("set")) {
+
+                        if (args.length != 4) {
+
+                            sender.sendMessage(ShadowUtils.Chat("Invalid Arguments. Usage: /colegsim set <name> <stat> <value>"));
+    
+                            return true;
+    
+                        }
+    
+                        Player target = Bukkit.getPlayer(args[1]);
+    
+                        if (target == null || !target.isOnline()) {
+    
+                            sender.sendMessage(ShadowUtils.Chat("&cInvalid Target"));
+    
+                            return true;
+    
+                        }
+    
+                        ColegPlayer colegTargetPlayer = ColegSim.playerStorage.get(target); 
+    
+                        switch (args[2].toLowerCase()) {
+    
+                            case "kills" -> {
+    
+                                colegTargetPlayer.setPlayerKills(Integer.parseInt(args[3]));
+    
+                                sender.sendMessage(ShadowUtils.Chat("&aSuccessfully set " + target.getName() + "'s 'kills' to " + args[3] + "."));
+    
+                                return true;
+    
+                            }
+    
+                            case "lives" -> {
+                                
+                                colegTargetPlayer.setPlayerLives(Integer.parseInt(args[3]));
+    
+                                sender.sendMessage(ShadowUtils.Chat("&aSuccessfully set " + target.getName() + "'s 'lives' to " + args[3] + "."));
+    
+                                if (colegTargetPlayer.getPlayerLives() == 0) colegTargetPlayer.playerDeath();
+
+                                return true;
+    
+                            }
+    
+                            case "isdead" -> {
+                                
+                                colegTargetPlayer.setDead(Boolean.getBoolean(args[3]));
+    
+                                sender.sendMessage(ShadowUtils.Chat("&aSuccessfully set " + target.getName() + "'s 'isdead' to " + args[3] + "."));
+
+                                colegTargetPlayer.setPlayerLives(0);
+                                colegTargetPlayer.playerDeath();
+    
+                                return true;
+    
+                            }
+    
+                            case "target" -> {
+                                
+                                colegTargetPlayer.setTarget(args[3]);
+    
+                                sender.sendMessage(ShadowUtils.Chat("&aSuccessfully set " + target.getName() + "'s 'target' to " + args[3] + "."));
+    
+                                return true;
+    
+                            }
+    
+                            case "targetkilled" -> {
+                                
+                                colegTargetPlayer.setTargetKilled(Boolean.getBoolean(args[3]));
+    
+                                sender.sendMessage(ShadowUtils.Chat("&aSuccessfully set " + target.getName() + "'s 'targetkilled' to " + args[3] + "."));
+    
+                                return true;
+    
+                            }
+    
+                            default -> sender.sendMessage(ShadowUtils.Chat("&cInvalid Arguments."));
+    
+                        }
+
+                    }
+
                 break;
 
             default:
@@ -109,33 +196,72 @@ public class MainCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String string, String[] args) {
 
-        List<String> noArguments = new ArrayList<>();
-        List<String> oneArguments = new ArrayList<>();
+        List<String> argumentsList = new ArrayList<>();
 
         switch (args.length) {
 
             case 1:
 
-                noArguments.add("dump");
-                noArguments.add("reset");
+                argumentsList.add("dump");
+                argumentsList.add("reset");
+                argumentsList.add("set");
 
-                return noArguments;
+                return argumentsList;
 
             case 2:
 
-                if (args[0].equalsIgnoreCase("dump") || args[0].equalsIgnoreCase("reset")) {
+                switch(args[0].toLowerCase()) {
 
-                    Bukkit.getOnlinePlayers().forEach(player -> oneArguments.add(player.getName()));
+                    case "dump", "reset", "set" -> Bukkit.getOnlinePlayers().forEach(player -> argumentsList.add(player.getName()));
 
                 }
 
-                return oneArguments;
+                return argumentsList;
 
-            default:
+            case 3:
 
-                return new ArrayList<>();
+                switch(args[0].toLowerCase()) {
+
+                    case "set" -> {
+
+                        argumentsList.add("kills");
+                        argumentsList.add("lives");
+                        argumentsList.add("isdead");
+                        argumentsList.add("target");
+                        argumentsList.add("targetkilled");
+
+                    }
+
+                }
+
+            case 4:
+
+                switch(args[2].toLowerCase()) {
+
+                    case "kills", "lives" -> {
+
+                        for (int i = 0; i < 100; i++) argumentsList.add(String.valueOf(i));
+
+                    }
+
+                    case "isdead", "targetkilled" -> {
+
+                        argumentsList.add("true");
+                        argumentsList.add("false");
+
+                    }
+
+                    case "target" -> {
+
+                        Bukkit.getOnlinePlayers().forEach(players -> argumentsList.add(players.getName()));
+
+                    }
+
+                }
 
         }
+
+        return argumentsList;
 
     }
 }

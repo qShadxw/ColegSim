@@ -4,6 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import uk.co.tmdavies.colegsim.commands.MainCommand;
+import uk.co.tmdavies.colegsim.commands.BountyCommand;
+import uk.co.tmdavies.colegsim.commands.SusCommand;
 import uk.co.tmdavies.colegsim.listeners.PlayerListener;
 import uk.co.tmdavies.colegsim.objects.ColegPlayer;
 import uk.co.tmdavies.colegsim.utils.ShadowConfig;
@@ -39,6 +41,8 @@ public final class ColegSim extends JavaPlugin {
     public void onEnable() {
 
         new MainCommand(this);
+        new BountyCommand(this);
+        new SusCommand(this);
         new PlayerListener(this);
 
         ShadowUtils.Prefix = mainConfig.getString("Prefix");

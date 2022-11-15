@@ -28,23 +28,8 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        if (event.getPlayer().isBanned()) return;
-
-        List<String> playerNames = new ArrayList<>();
-
-        if (!ColegSim.playerConfig.getStringList("Players").isEmpty())
         
-            ColegSim.playerConfig.getStringList("Players").forEach(string -> playerNames.add(string));
-
-        if (!playerNames.contains(event.getPlayer().getName())) {
-
-            playerNames.add(event.getPlayer().getName());
-            
-            ColegSim.playerConfig.add("Players", playerNames);
-
-            ColegSim.playerConfig.save();
-
-        }
+        if (event.getPlayer().isBanned()) return;
 
         ColegSim.playerStorage.put(event.getPlayer(), new ColegPlayer(event.getPlayer()));
 
@@ -63,14 +48,21 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
 
-        if (!(event.getEntity().getKiller() instanceof Player)) return;
-
         ColegPlayer colegPlayer = ColegSim.playerStorage.get(event.getEntity());
+
+        if (!(event.getEntity().getKiller() instanceof Player)) {
+
+            colegPlayer.playerDeath();
+
+            return;
+
+        }
+
         ColegPlayer colegPlayerKiller = ColegSim.playerStorage.get(event.getEntity().getKiller());
 
-        Bukkit.broadcastMessage(ColegSim.mainConfig.getString("Death.Announcement")
-            .replace("%player%", colegPlayer.getPlayer().getName())
-            .replace("%target%", colegPlayerKiller.getPlayer().getName()));
+        event.setDeathMessage(ShadowUtils.Chat(ColegSim.mainConfig.getString("Death.Announcement")
+            .replace("%player%", colegPlayerKiller.getPlayer().getName())
+            .replace("%target%", colegPlayer.getPlayer().getName())));
 
         if (event.getEntity().getKiller().getName().equals(event.getEntity().getName())) {
             // Player killed self

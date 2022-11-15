@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import uk.co.tmdavies.colegsim.ColegSim;
 import uk.co.tmdavies.colegsim.utils.ShadowUtils;
+import uk.co.tmdavies.colegsim.utils.ShadowConfig;
 
 import java.util.Random;
 import java.util.List;
@@ -35,10 +36,10 @@ public class ColegPlayer {
 
             this.playerKills = ColegSim.mainConfig.getInt(this.player.getName() + ".Kills");
             this.playerLives = ColegSim.mainConfig.getInt(this.player.getName() + ".Lives");
-            this.isDead = ColegSim.mainConfig.getBoolean(this.player.getName() + ".IsDead");
+            this.isDead = Boolean.getBoolean(ColegSim.mainConfig.getString(this.player.getName() + ".IsDead"));
             this.tomorrowTime = ColegSim.mainConfig.getLong(this.player.getName() + ".DailyReset");
             this.target = ColegSim.mainConfig.getString(this.player.getName() + ".Bounty");
-            this.targetKilled = ColegSim.mainConfig.getBoolean(this.player.getName() + ".BountyKilled");
+            this.targetKilled = Boolean.getBoolean(ColegSim.mainConfig.getString(this.player.getName() + ".BountyKilled"));
 
         }
 
@@ -157,9 +158,8 @@ public class ColegPlayer {
 
         if (players.isEmpty()) return;
 
-        players.forEach(string -> this.player.sendMessage(ShadowUtils.Chat(string)));
-
         this.target = players.get(random.nextInt(players.size()));
+        this.targetKilled = false;
 
         this.player.sendMessage(ShadowUtils.Chat("&fYour bounty today is: " + this.getTarget()));
 
@@ -169,8 +169,10 @@ public class ColegPlayer {
 
         if (this.loginTime < this.tomorrowTime) return;
 
+        this.playerLives = 1;
+        this.isDead = false;
+
         this.selectRandomTarget();
-        this.targetKilled = false;
 
         this.player.sendMessage(ShadowUtils.Chat("&fYour bounty today is: " + this.getTarget()));
 
@@ -184,6 +186,7 @@ public class ColegPlayer {
         this.player.sendMessage(ShadowUtils.Chat(" %d| &a+1 Life"));
 
         this.targetKilled = true;
+        this.target = "None";
         this.playerLives += 1;
 
     }
@@ -200,20 +203,24 @@ public class ColegPlayer {
 
         this.player.kickPlayer("You have died! Nerd!");
 
+        this.playerLives = 1;
+
     }
 
     public void saveData() {
 
-        ColegSim.mainConfig.add(this.player.getName() + ".UUID", this.player.getUniqueId().toString());
-        ColegSim.mainConfig.add(this.player.getName() + ".Kills", this.playerKills);
-        ColegSim.mainConfig.add(this.player.getName() + ".Lives", this.playerLives);
-        ColegSim.mainConfig.add(this.player.getName() + ".IsDead", this.isDead);
-        ColegSim.mainConfig.add(this.player.getName() + ".LastLogin", this.loginTime);
-        ColegSim.mainConfig.add(this.player.getName() + ".DailyReset", this.tomorrowTime);
-        ColegSim.mainConfig.add(this.player.getName() + ".Bounty", this.target);
-        ColegSim.mainConfig.add(this.player.getName() + ".BountyKilled", this.targetKilled);
+        ShadowConfig config = ColegSim.mainConfig;
 
-        ColegSim.mainConfig.save();
+        config.set(this.player.getName() + ".UUID", this.player.getUniqueId().toString());
+        config.set(this.player.getName() + ".Kills", this.playerKills);
+        config.set(this.player.getName() + ".Lives", this.playerLives);
+        config.set(this.player.getName() + ".IsDead", this.isDead);
+        config.set(this.player.getName() + ".LastLogin", this.loginTime);
+        config.set(this.player.getName() + ".DailyReset", this.tomorrowTime);
+        config.set(this.player.getName() + ".Bounty", this.target);
+        config.set(this.player.getName() + ".BountyKilled", this.targetKilled);
+
+        config.save();
 
     }
 

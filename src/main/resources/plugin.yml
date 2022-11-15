@@ -5,6 +5,15 @@ api-version: 1.19
 commands:
   colegsim:
     description: Player Info Manipulation and Viewing
+  bounty:
+    description: Player Bounty Viewing
+  susbar:
+    description: Command which modifies the susbar
+    alias: [ sus ]
 permissions:
   colegsim.admin:
+    default: op
+  colegsim.bounty:
+    default: op
+  colegsim.susbar:
     default: op
